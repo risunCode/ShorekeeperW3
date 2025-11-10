@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UBSI Online Exam - Simulasi</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    
+    .exam-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .exam-header {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .exam-title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .timer {
+      background: rgba(255,255,255,0.2);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .alert {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 15px 20px;
+      margin: 20px 30px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .exam-content {
+      padding: 30px;
+    }
+    
+    .detail_soal_id {
+      display: none;
+    }
+    
+    .soal {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      font-size: 16px;
+      line-height: 1.8;
+      border-left: 4px solid #2196f3;
+    }
+    
+    #nomerurut {
+      font-weight: 500;
+      color: #1e3c72;
+    }
+    
+    .answers-container {
+      margin-top: 20px;
+    }
+    
+    .jawab {
+      background: white;
+      border: 2px solid #e0e0e0;
+      padding: 15px 20px;
+      margin: 12px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .jawab:hover {
+      border-color: #2196f3;
+      background: #f5f9ff;
+      transform: translateX(5px);
+    }
+    
+    .jawab table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .jawab td {
+      vertical-align: top;
+      padding: 0;
+    }
+    
+    .jawab span {
+      font-weight: bold;
+      color: #2196f3;
+      margin-right: 10px;
+    }
+    
+    .pilihan {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    
+    .jawab.selected {
+      background: rgb(25, 128, 212);
+      color: white;
+      border-color: rgb(25, 128, 212);
+      box-shadow: 0 4px 15px rgba(25, 128, 212, 0.3);
+    }
+    
+    .jawab.selected span,
+    .jawab.selected .pilihan {
+      color: white;
+    }
+    
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #e0e0e0;
+    }
+    
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .btn-prev {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-prev:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .btn-next {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-next:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40,167,69,0.4);
+    }
+    
+    .btn-finish {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-finish:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220,53,69,0.4);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .question-indicator {
+      text-align: center;
+      color: #6c757d;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .progress-bar {
+      height: 4px;
+      background: #e0e0e0;
+      margin-bottom: 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2196f3, #21d4fd);
+      transition: width 0.3s ease;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    
+    .status-waiting {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-answered {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .footer {
+      background: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+      font-size: 14px;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .ai-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 50px;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+      z-index: 1000;
+      display: none;
+      animation: pulse 2s infinite;
+    }
+    
+    .ai-indicator.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="ai-indicator" id="aiIndicator">
+    🤖 AI Processing...
+  </div>
+
+  <div class="exam-container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressBar" style="width: 20%"></div>
+    </div>
+    
+    <div class="exam-header">
+      <div>
+        <div class="exam-title">📚 Ujian Keamanan Siber</div>
+        <div style="font-size: 14px; margin-top: 5px; opacity: 0.9;">
+          Mata Kuliah: Cyber Security
+        </div>
+      </div>
+      <div class="timer" id="timer">
+        ⏱️ Sisa waktu: <span id="demo">00:15:00</span>
+      </div>
+    </div>
+    
+    <div class="alert">
+      <span style="font-size: 24px;">ℹ️</span>
+      <div>
+        <strong>Petunjuk:</strong> Pilih salah satu jawaban yang paling tepat. 
+        <span id="extensionStatus" class="status-badge status-waiting">Extension: Checking...</span>
+      </div>
+    </div>
+    
+    <div class="exam-content">
+      <!-- Question ID (hidden) -->
+      <span class="detail_soal_id">729200</span>
+      
+      <!-- Question -->
+      <div class="soal">
+        <div id="nomerurut" data-id="1">
+          1. Kejahatan yang dilakukan dengan menyusupkan suatu logic bomb atau virus sehingga komputer tidak dapat digunakan, termasuk modus operandi cybercime yang disebut...
+        </div>
+      </div>
+      
+      <!-- Answers -->
+      <div class="answers-container">
+        <div class="jawab" data-id="729200" data-jawab="eyJpdiI6IjJCMzBsbzBZUVRoMmtML25GRG0xb0E9PSIsInZhbHVl">
+          <table width="100%">
+            <tr>
+              <td width="30px" valign="top"><span>A.</span></td>
+              <td valign="top" class="pilihan">Data Forgery</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div class="jawab" data-id="729200" data-jawab="eyJpdiI6IkR2dHp5aHhSc2JCNzQ0Q0N3NzhyUHc9PSIsInZhbHVl">
+          <table width="100%">
+            <tr>
+              <td width="30px" valign="top"><span>B.</span></td>
+              <td valign="top" class="pilihan">Cyber Sabotage & Extortion</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div class="jawab" data-id="729200" data-jawab="eyJpdiI6InAvZFNtVkRyUTNyR09rS013TVRvbnc9PSIsInZhbHVl">
+          <table width="100%">
+            <tr>
+              <td width="30px" valign="top"><span>C.</span></td>
+              <td valign="top" class="pilihan">Illegal Contents</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div class="jawab" data-id="729200" data-jawab="eyJpdiI6ImlhTTUwWDcyYThCYU9rejA4R0cwbmc9PSIsInZhbHVl">
+          <table width="100%">
+            <tr>
+              <td width="30px" valign="top"><span>D.</span></td>
+              <td valign="top" class="pilihan">Spionase Cyber</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div class="jawab" data-id="729200" data-jawab="eyJpdiI6InJuOUV3a0FsYm1VUHhPaC8xeklSUkE9PSIsInZhbHVl">
+          <table width="100%">
+            <tr>
+              <td width="30px" valign="top"><span>E.</span></td>
+              <td valign="top" class="pilihan">Misuse of devices</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <div class="navigation">
+        <button class="btn btn-prev" id="prevBtn" onclick="prevQuestion()" disabled>
+          ← Sebelumnya
+        </button>
+        
+        <div class="question-indicator">
+          Soal <span id="currentQuestion">1</span> dari <span id="totalQuestions">5</span>
+        </div>
+        
+        <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">
+          Selanjutnya →
+        </button>
+        
+        <button class="btn btn-finish" id="finishBtn" onclick="finishExam()" style="display: none;">
+          🏁 Selesai
+        </button>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <strong>UBSI Online Exam System</strong> • Testing Mode • Press F12 to see AI logs
+    </div>
+  </div>
+
+  <script>
+    // Quiz Data
+    const quizData = [
+      {
+        id: 729200,
+        number: 1,
+        question: "Kejahatan yang dilakukan dengan menyusupkan suatu logic bomb atau virus sehingga komputer tidak dapat digunakan, termasuk modus operandi cybercime yang disebut...",
+        answers: [
+          "Data Forgery",
+          "Cyber Sabotage & Extortion",
+          "Illegal Contents",
+          "Spionase Cyber",
+          "Misuse of devices"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 729201,
+        number: 2,
+        question: "Malware yang dirancang untuk menyamar sebagai program yang sah dan dapat merusak sistem adalah...",
+        answers: [
+          "Worm",
+          "Trojan Horse",
+          "Spyware",
+          "Adware",
+          "Rootkit"
+        ],
+        correctAnswer: "B"
+      },
+      {
+        id: 729202,
+        number: 3,
+        question: "Protokol keamanan yang paling aman untuk mengenkripsi data pada jaringan wireless adalah...",
+        answers: [
+          "WEP",
+          "WPA",
+          "WPA2",
+          "HTTP",
+          "FTP"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 729203,
+        number: 4,
+        question: "Serangan yang dilakukan dengan membanjiri server dengan request palsu hingga server tidak dapat melayani user yang sah disebut...",
+        answers: [
+          "Phishing",
+          "Spoofing",
+          "DDoS Attack",
+          "SQL Injection",
+          "Man-in-the-Middle"
+        ],
+        correctAnswer: "C"
+      },
+      {
+        id: 729204,
+        number: 5,
+        question: "Metode enkripsi yang menggunakan dua kunci berbeda (public key dan private key) disebut...",
+        answers: [
+          "Symmetric Encryption",
+          "Asymmetric Encryption",
+          "Hash Function",
+          "Digital Signature",
+          "SSL/TLS"
+        ],
+        correctAnswer: "B"
+      }
+    ];
+    
+    let currentQuestionIndex = 0;
+    let answers = {};
+    let timeLeft = 900; // 15 minutes in seconds
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadQuestion(0);
+      startTimer();
+      checkExtension();
+      setupAnswerListeners();
+    });
+    
+    // Setup answer click listeners
+    function setupAnswerListeners() {
+      document.addEventListener('click', function(e) {
+        const jawabEl = e.target.closest('.jawab');
+        if (!jawabEl) return;
+        
+        // Remove previous selection
+        document.querySelectorAll('.jawab').forEach(j => j.classList.remove('selected'));
+        
+        // Add selection
+        jawabEl.classList.add('selected');
+        
+        // Save answer
+        const letter = jawabEl.querySelector('span').textContent.replace('.', '');
+        answers[currentQuestionIndex] = letter;
+        
+        console.log(`[User] Selected: ${letter}`);
+      });
+    }
+    
+    // Load question
+    function loadQuestion(index) {
+      if (index < 0 || index >= quizData.length) return;
+      
+      currentQuestionIndex = index;
+      const q = quizData[index];
+      
+      // Show AI indicator briefly
+      showAIIndicator();
+      
+      // Update question
+      document.querySelector('.detail_soal_id').textContent = q.id;
+      document.querySelector('#nomerurut').setAttribute('data-id', q.number);
+      document.querySelector('#nomerurut').textContent = `${q.number}. ${q.question}`;
+      
+      // Update answers
+      const answerElements = document.querySelectorAll('.jawab');
+      q.answers.forEach((answer, i) => {
+        if (answerElements[i]) {
+          answerElements[i].querySelector('.pilihan').textContent = answer;
+          answerElements[i].setAttribute('data-id', q.id);
+          answerElements[i].classList.remove('selected');
+          
+          // Restore saved answer
+          if (answers[index] === String.fromCharCode(65 + i)) {
+            answerElements[i].classList.add('selected');
+          }
+        }
+      });
+      
+      // Update UI
+      document.getElementById('currentQuestion').textContent = q.number;
+      document.getElementById('totalQuestions').textContent = quizData.length;
+      
+      // Update buttons
+      document.getElementById('prevBtn').disabled = index === 0;
+      
+      if (index === quizData.length - 1) {
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('finishBtn').style.display = 'inline-block';
+      } else {
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        document.getElementById('finishBtn').style.display = 'none';
+      }
+      
+      // Update progress
+      const progress = ((index + 1) / quizData.length) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+    }
+    
+    function showAIIndicator() {
+      const indicator = document.getElementById('aiIndicator');
+      indicator.classList.add('active');
+      setTimeout(() => {
+        indicator.classList.remove('active');
+      }, 2000);
+    }
+    
+    function nextQuestion() {
+      if (currentQuestionIndex < quizData.length - 1) {
+        loadQuestion(currentQuestionIndex + 1);
+      }
+    }
+    
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        loadQuestion(currentQuestionIndex - 1);
+      }
+    }
+    
+    function finishExam() {
+      const answeredCount = Object.keys(answers).length;
+      const totalQuestions = quizData.length;
+      
+      if (answeredCount < totalQuestions) {
+        if (!confirm(`Anda baru menjawab ${answeredCount} dari ${totalQuestions} soal. Yakin ingin mengakhiri ujian?`)) {
+          return;
+        }
+      }
+      
+      // Calculate score
+      let correctCount = 0;
+      quizData.forEach((q, index) => {
+        if (answers[index] === q.correctAnswer) {
+          correctCount++;
+        }
+      });
+      
+      const score = (correctCount / totalQuestions * 100).toFixed(0);
+      
+      alert(`🎉 Ujian Selesai!\n\nBenar: ${correctCount}/${totalQuestions}\nNilai: ${score}\n\nJawaban Anda:\n${Object.entries(answers).map(([i, a]) => `Soal ${parseInt(i)+1}: ${a}`).join('\n')}`);
+      
+      console.log('📊 Exam Results:', {
+        answered: answeredCount,
+        correct: correctCount,
+        score: score,
+        answers: answers
+      });
+    }
+    
+    // Timer
+    function startTimer() {
+      const timerInterval = setInterval(() => {
+        timeLeft--;
+        
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        document.getElementById('demo').textContent = 
+          `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          alert('⏰ Waktu Habis! Ujian akan diakhiri.');
+          finishExam();
+        }
+      }, 1000);
+    }
+    
+    // Check extension status
+    function checkExtension() {
+      let attempts = 0;
+      const maxAttempts = 5;
+      
+      const checkInterval = setInterval(() => {
+        attempts++;
+        const statusEl = document.getElementById('extensionStatus');
+        
+        if (window.ubsiAutoAnswerScript) {
+          statusEl.textContent = '✅ Extension Active';
+          statusEl.className = 'status-badge status-answered';
+          console.log('%c✅ UBSI Auto Answer Extension Detected!', 'color: lime; font-size: 16px; font-weight: bold');
+          clearInterval(checkInterval);
+        } else if (attempts >= maxAttempts) {
+          statusEl.textContent = '⚠️ Extension Not Active';
+          statusEl.className = 'status-badge status-waiting';
+          console.log('%c⚠️ Extension not detected. Enable "Auto Answer UBSI" in settings.', 'color: orange; font-size: 14px');
+          console.log('%cTroubleshooting:', 'color: yellow; font-weight: bold');
+          console.log('1. Go to chrome://extensions');
+          console.log('2. Reload AskMate extension');
+          console.log('3. Refresh this page (Ctrl+Shift+R)');
+          console.log('4. Enable "Auto Answer UBSI" toggle');
+          clearInterval(checkInterval);
+        } else {
+          statusEl.textContent = `⏳ Checking... (${attempts}/${maxAttempts})`;
+          console.log(`[Check ${attempts}/${maxAttempts}] Waiting for extension...`);
+        }
+      }, 500);
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        nextQuestion();
+      } else if (e.key >= '1' && e.key <= '5') {
+        const answerIndex = parseInt(e.key) - 1;
+        const answerElements = document.querySelectorAll('.jawab');
+        if (answerElements[answerIndex]) {
+          answerElements[answerIndex].click();
+        }
+      }
+    });
+    
+    console.log('%c🎓 UBSI Exam Simulator', 'color: #2196f3; font-size: 20px; font-weight: bold');
+    console.log('%cShortcuts:', 'color: yellow; font-weight: bold');
+    console.log('  ← → : Navigate questions');
+    console.log('  1-5 : Select answer A-E');
+    console.log('');
+    console.log('%cWaiting for Auto Answer Extension...', 'color: orange');
+  </script>
+</body>
+</html>
