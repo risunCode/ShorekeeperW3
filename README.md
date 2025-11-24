@@ -6,28 +6,8 @@ A comprehensive character showcase project for Shorekeeper from Wuthering Waves,
 
 This project presents an immersive, interactive webpage dedicated to Shorekeeper, the eternal guardian of the Black Shores from Wuthering Waves. The project showcases her story, abilities, gallery, and lore through modern web technologies with beautiful UI design.
 
-## 📁 Project Structure
-
-```
-Shorekeeper/
-├── 🌐 index.html                 # Standalone HTML version (GitHub Pages ready)
-├── 🖼️ images/                    # Shared image assets
-│   └── shorekeeper/
-│       ├── hero-main.png         # Hero background image
-│       ├── portrait-1.png        # Character portrait
-│       ├── gallery-1.jpg         # Gallery image 1
-│       ├── gallery-2.jpg         # Gallery image 2  
-│       ├── gallery-3.jpg         # Gallery image 3
-│       └── gallery-4.jpg         # Gallery image 4
-├── ⚛️ Shorekeeper-NextJS/        # Next.js development version
-│   ├── app/                      # Next.js 14 app directory
-│   ├── public/                   # Next.js public assets
-│   ├── package.json              # Dependencies and scripts
-│   ├── tailwind.config.ts        # Tailwind CSS configuration
-│   └── README.md                 # Next.js specific documentation
-└── 📖 README.md                  # This file
-```
-
+<img width="1897" height="911" alt="image" src="https://github.com/user-attachments/assets/2a5c77d3-70ae-455d-95e2-64474c09c266" />
+ 
 ## 🚀 Available Versions
 
 ### 1. **HTML Version** (Standalone)
@@ -190,5 +170,6 @@ Wuthering Waves is an open-world action RPG developed by Kuro Games. Shorekeeper
 ---
 
 **Built with ❤️ for the Wuthering Waves community**
+
 
 *"I am the keeper of shores, the guardian between tides of reality."* - Shorekeeper
